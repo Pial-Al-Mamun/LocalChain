@@ -5,9 +5,14 @@ import { AppLoggerModule } from './app-logger/app-logger.module';
 import { ConfigModule } from '@nestjs/config';
 import { TransactionService } from './transaction/transaction.service';
 import { BlockService } from './block/block.service';
+import { BlockModule } from './block/block.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AppLoggerModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    AppLoggerModule,
+    BlockModule,
+  ],
   controllers: [AppController],
   providers: [AppService, TransactionService, BlockService],
 })
