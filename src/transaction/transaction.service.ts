@@ -8,10 +8,12 @@ import crypto from 'crypto';
 import * as secp from '@noble/secp256k1';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { sha256 } from '@noble/hashes/sha2.js';
-
+/**
+ * Class that handles all of the transaction logic in the blockchain
+ */
 @Injectable()
 export class TransactionService {
-  calculateHash(tsx: Transaction) {
+  calculateHash(tsx: Transaction): string {
     return crypto
       .createHash('sha256')
       .update(
@@ -48,11 +50,21 @@ export class TransactionService {
   }
 
   /**
-   * method to validate if the given transaction is legitimate
-   * @param @type Transaction
-   * @returns Promise<boolean>
-   * */
-  async isValidAsync(tsx: Transaction): Promise<boolean> {
+   * Validates whether a given transaction has a legitimate cryptographic signature.
+   *
+   * If the transaction has no `fromAddress` (null), it's considered valid
+   * (e.g., system-generated transactions). Otherwise, it verifies the ECDSA
+   * signature against the transaction data using secp256k1.
+   *
+   * @param this - Declared as `void` to indicate this method doesn't use `this`,
+   *               preventing ESLint unbound-method warnings when passed as a callback.
+   * @param tsx - The transaction object containing `fromAddress`, `signature`, and data fields.
+   *
+   * @returns A promise that resolves to `true` if the signature is valid, `false` otherwise.
+   *
+   * @throws {UnauthorizedException} - If the transaction has a `fromAddress` but no signature.
+   */
+  async isValidAsync(this: void, tsx: Transaction): Promise<boolean> {
     if (tsx.fromAdress === null) {
       return true;
     }
@@ -77,8 +89,13 @@ export class TransactionService {
   }
 
   /**
-   * Validate that the private key matches the fromAddress
+   * Validate that the private key matches the owner of the block
+   * @param fromAdress - The public address of the transaction initiator (hex string).
+   * @param privateKey - The private key to validate (Uint8Array).
+   *
    * @throws {BadRequestException} If the private key doesn't match the address
+   *
+   * @internal - This method is private and only used internally by the service
    */
   private validatePrivateKeyMatchesAddress(
     fromAdress: string,

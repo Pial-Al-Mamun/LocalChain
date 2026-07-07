@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
